@@ -50,6 +50,8 @@ class ChatListViewController: UIViewController {
             chatIds.forEach { id in
                 DB.shared.loadChatData(from: id) { chatData in
                     self.chatData.append(chatData)
+                    print("-----------getChatIds")
+                    print(self.chatData)
                     self.chatData.sort { $0.timestamp > $1.timestamp }
                     DispatchQueue.main.async {
                         self.tableView.reloadData()
@@ -58,73 +60,42 @@ class ChatListViewController: UIViewController {
             }
             chatIds.forEach { id in
                 DB.shared.chatRef.child("chats/\(id)").observe(.childChanged) { snapshot in
-//                    guard let self = self else { return }
-                    print(id)
-                    // 1. 기존 챗데이터 리스트에서 해당 ID 제거
-                    //  2. 추가
-                    // 3. 인서트로우
                     DB.shared.loadChatData(from: id) { chat in
                         let chat = chat as Chat
                         self.chatData = self.chatData.filter {
                             $0.id! != id
                         }
                         self.chatData.append(chat)
+                        print("-----------childChanged")
+                        print(self.chatData)
                         self.chatData.sort { $0.timestamp > $1.timestamp}
-                        self.tableView.reloadData()
+                        DispatchQueue.main.async {
+                            self.tableView.reloadData()
+                        }
                         
                     }
                 }
             }
+            print("load chat list here!")
         }
     }
+    //email -> chatId
     func openChat(with friendInfo: [String: Any]) {
-        // 새로운 채팅을 열 때는 대상 userInfo로 접근
-        // 챗 db에 friendInfo와의 채팅이 존재하는지 확인
-        // 해당 채팅이 존재하면 chatViewController로 chatId 전달하며 present, 아니면 nil 전달하며 present
-        guard let friendEmail = friendInfo["email"] as? String else { return }
-        var targetChatId: String? = nil
-        DB.shared.getChatIds(from: UserInfoContext.shared.email) { chatIds in
-
-        }
-//        getChatIds {
-//            self.chatIds.forEach { chatId in
-//                self.chatRef.child("participants").child(chatId).getData { error, snapshot in
-//                    if let error = error {
-//                        print("Error occured during get participants data. \(error)")
-//                    } else if let data = snapshot.value as? NSDictionary {
-//                        let counterpart = data.allValues.filter {
-//                            ($0 as! String) != UserInfoContext.shared.email
-//                        } as! [String]
-//                        print(counterpart)
-//                        if counterpart.count == 1 && counterpart.first == friendEmail {
-//                            // 타겟 friend와의 채팅 찾음
-//                            print(counterpart)
-//                            targetChatId = chatId
-//                            return
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//        let board = UIStoryboard(name: "Main", bundle: nil)
-//        let chatVC = board.instantiateViewController(withIdentifier: "ChatViewController") as! ChatViewController
-//        chatVC.friendInfo = friendInfo
-//        chatVC.chatId = targetChatId
-//        self.navigationController?.pushViewController(chatVC, animated: true)
-    }
-    private func chatReceived() {
         
-    }
-    
-    private func chatAdded() {
+        //일단 열자
+        let board = UIStoryboard.init(name: "Main", bundle: nil)
+        let chatVC = board.instantiateViewController(withIdentifier: "ChatViewController") as! ChatViewController
+        chatVC.chatId = nil
+        chatVC.friendInfo = friendInfo
+        self.navigationController?.pushViewController(chatVC, animated: true)
         
     }
     
     @IBAction func searchButtonPressed(_ sender: UIButton) {
     }
     @IBAction func addChatButtonPressed(_ sender: UIButton) {
-        
         //  call openNewChat
+        
     }
 }
 
@@ -140,6 +111,7 @@ extension ChatListViewController: UITableViewDataSource {
         
         // 채팅 타이틀 별도 지정 안 되어있고 1대1 채팅인 경우 상대방 이름으로 nameLabel 세팅
         DB.shared.getUserInfoFromChatId(with: self.chatData[indexPath.row].id) { userInfo in
+            print("\(indexPath.row) : \(userInfo)")
             if let image = userInfo["image"] as? [Float],
                let name = userInfo["username"] as? String {
                 cell.chatImageView.image = UIColor(red: CGFloat(image[0]), green: CGFloat(image[1]), blue: CGFloat(image[2]), alpha: CGFloat(image[3])).image(cell.chatImageView.frame.size)
@@ -155,7 +127,9 @@ extension ChatListViewController: UITableViewDataSource {
         let timestampDate = calendar.startOfDay(for: Date(timeIntervalSince1970: Double(chat.timestamp)))
         if 1 > calendar.dateComponents([.day], from: timestampDate, to: Date()).day! {
             cell.timestampLabel.text = dateFormatterInTime(from: chat.timestamp)
-        } else {
+        } else if 2 > calendar.dateComponents([.day], from: timestampDate, to: Date()).day! {
+            cell.timestampLabel.text = "어제"
+        }else {
             cell.timestampLabel.text = dateFormatterInDate(from: chat.timestamp)
         }
         

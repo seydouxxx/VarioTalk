@@ -13,7 +13,7 @@ func dateFormatterInTime(from timestamp: Int) -> String {
     let dateFormatter = DateFormatter()
     dateFormatter.timeZone = .autoupdatingCurrent
     dateFormatter.locale = Locale(identifier: "ko")
-    dateFormatter.dateFormat = "a hh:mm"
+    dateFormatter.dateFormat = "HH:mm"
     return dateFormatter.string(from: time)
 }
 func dateFormatterInDate(from timestamp: Int) -> String {

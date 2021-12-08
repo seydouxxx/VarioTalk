@@ -98,7 +98,7 @@ extension DB {
         }
     }
     
-    // email -> Bool
+    // email -> chatId as String
     func createNewChat(with email: String, message: Message, completion: @escaping (String) -> Void) {
         let chatId = UUID().uuidString
         
@@ -123,6 +123,7 @@ extension DB {
                 "title": "\(UserInfoContext.shared.username!),\(friendInfo["username"] as! String)",
                 "lastMessage": msgContent,
                 "timestamp": msgTimestamp,
+                "id": chatId
             ])
         })
         // 내 유저 정보에 chatId 추가
@@ -173,7 +174,8 @@ extension DB {
         self.chatRef.child("chats/\(chatId)").setValue([
             "lastMessage": msgContent,
             "timestamp": msgTimestamp,
-            "title": prevTitle
+            "title": prevTitle,
+            "id": chatId
         ])
     }
     

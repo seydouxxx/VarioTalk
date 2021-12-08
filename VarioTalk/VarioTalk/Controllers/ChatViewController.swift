@@ -75,13 +75,18 @@ class ChatViewController: UIViewController {
             // 새로운 채팅 세션인 경우 -> db에 새로운 채팅방 정보 생성
             DB.shared.createNewChat(with: friendInfo["email"] as! String, message: message) { chatId in
                 self.chatId = chatId
+                print("chatId: ")
+                print(self.chatId)
             }
         }
         self.chatTextField.text = ""
     }
     func syncMessages() {
         guard let chatId = self.chatId else { return }
+        print("why?")
         DB.shared.chatRef.child("messages/\(chatId)").observe(.childAdded) { snapshot in
+            
+            print("why2?")
             if let data = snapshot.value as? NSDictionary,
                let msgContent = data["message"] as? String,
                let msgSender = data["sender"] as? String,
@@ -93,6 +98,9 @@ class ChatViewController: UIViewController {
                 self.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
             }
         }
+        //TODO: newChat
+        
+//        DB.shared.chatRef.child("")
     }
     @IBAction func plusButtonPressed(_ sender: UIButton) {
         // TODO: 추후에 통화(오디오/비디오) / 미디어 전송 기능 구현
