@@ -7,6 +7,7 @@
 
 import UIKit
 import Firebase
+import FirebaseFirestore
 
 protocol FriendAdded: AnyObject {
     func friendAdded()
@@ -53,7 +54,6 @@ class AddFriendViewController: UIViewController {
         self.textField.addTarget(self, action: #selector(submitTextField(_:)), for: .editingDidEndOnExit)
         
         self.myEmailLabel.text = UserInfoContext.shared.email
-        
     }
     
     private func resetView() {
@@ -117,19 +117,6 @@ class AddFriendViewController: UIViewController {
                             "friends": friends
                         ])
                     }
-//                    let checker = friends.allSatisfy {
-//                        $0["email"] as! String != self.resultEmailLabel.text!
-//                    }
-//                    if checker {
-//                        friends.append([
-//                            "username": self.resultNameLabel.text!,
-//                            "email": self.resultEmailLabel.text!,
-//                            "image": self.targetRGB ?? [0, 0, 0, 0]
-//                        ])
-//                        document?.reference.updateData([
-//                            "friends": friends
-//                        ])
-//                    }
                 }
                 self.resetView()
                 self.delegate?.friendAdded()

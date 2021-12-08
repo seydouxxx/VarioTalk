@@ -8,6 +8,7 @@
 import UIKit
 import FirebaseAuth
 import Firebase
+import FirebaseFirestore
 import RxCocoa
 import RxSwift
 
@@ -36,44 +37,18 @@ class FriendsListViewController: UIViewController {
         
         self.searchFriendButton.setTitle("", for: .normal)
         self.addFriendButton.setTitle("", for: .normal)
-        
-        guard let docID = UserInfoContext.shared.email else { return }
-        self.db.collection("User").document(docID).getDocument { document, error in
-            if let document = document, document.exists {
-                
-                UserInfoContext.shared.username = (document.data()!["username"] as! String)
-                
-                if let friends = document.data()!["friends"] as? [String] {
-                    self.friends = friends
-                    self.loadFriends()
-                }
-                
-            } else if let error = error {
-                print("error occured during get documents: \(error)")
-            }
+        self.friendsInfo = []
+        DB.shared.getMyFriendsEmails(from: UserInfoContext.shared.email!) { friends in
+            self.friends = friends
+            self.loadFriends()
         }
     }
     
     private func loadFriends() {
         self.friends?.forEach {
-            let ref = self.db.collection("User").whereField("email", isEqualTo: $0)
-            ref.getDocuments { snapshot, error in
-                if let error = error {
-                    print("Error occured during get friends info. \(error)")
-                } else if let document = snapshot?.documents.first {
-                    
-                    if let username = document.data()["username"] as? String,
-                       let email = document.data()["email"] as? String,
-                       let image = document.data()["image"] as? [Float] {
-                        print(username, email, image)
-                        self.friendsInfo.append([
-                            "username": username,
-                            "email": email,
-                            "image": image
-                        ])
-                        self.tableView.reloadData()
-                    }
-                }
+            DB.shared.getUserInfo(from: $0) {
+                self.friendsInfo.append($0)
+                self.tableView.reloadData()
             }
         }
     }

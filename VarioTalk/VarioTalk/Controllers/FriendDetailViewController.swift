@@ -28,7 +28,7 @@ class FriendDetailViewController: UIViewController {
         let view = UIStackView()
         view.axis = .vertical
         view.backgroundColor = .clear
-        view.spacing = 50
+        view.spacing = 30
         return view
     }()
     lazy var nameLabel: UILabel = {
@@ -62,7 +62,7 @@ class FriendDetailViewController: UIViewController {
         let view = UIStackView()
         view.axis = .horizontal
         view.backgroundColor = .clear
-        view.spacing = 50
+        view.spacing = 30
         return view
     }()
     
@@ -90,7 +90,6 @@ class FriendDetailViewController: UIViewController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        guard let friend = friendInfo else { return }
         self.initView()
     }
     private func initView() {
@@ -136,11 +135,11 @@ class FriendDetailViewController: UIViewController {
         }
         
         self.callButton.snp.makeConstraints {
-            $0.width.height.equalTo(100)
+            $0.width.height.equalTo(40)
         }
         
         self.chatButton.snp.makeConstraints {
-            $0.width.height.equalTo(100)
+            $0.width.height.equalTo(40)
         }
         
     }
@@ -158,6 +157,14 @@ class FriendDetailViewController: UIViewController {
     }
     @objc func chatButtonPressed() {
         // go to chatViewController
+        let board = UIStoryboard(name: "Main", bundle: nil)
+        let mainScreen = board.instantiateViewController(withIdentifier: "MainScreen") as! UITabBarController
+        
+        mainScreen.modalPresentationStyle = .fullScreen
+        self.present(mainScreen, animated: false) {
+            mainScreen.selectedIndex = 1
+            ((mainScreen.selectedViewController as! UINavigationController).topViewController as! ChatListViewController).openChat(with: self.friendInfo!)
+        }
     }
     @objc func callButtonPressed() {
         // go to callViewController

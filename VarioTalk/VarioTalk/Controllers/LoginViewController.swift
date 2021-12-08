@@ -74,7 +74,7 @@ class LoginViewController: UIViewController {
             guard let self = self else { return }
             
             if let result = result {
-                guard let tabBarController = self.storyboard?.instantiateViewController(withIdentifier: "LoginSuccess") as? UITabBarController else { return }
+                guard let tabBarController = self.storyboard?.instantiateViewController(withIdentifier: "MainScreen") as? UITabBarController else { return }
 
                 UserInfoContext.shared.email = result.user.email!
                 

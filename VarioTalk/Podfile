@@ -12,6 +12,8 @@ target 'VarioTalk' do
   pod 'Firebase/Auth'
   pod 'Firebase/Analytics'
   pod 'Firebase/Firestore'
+  pod 'Firebase/Core'
   pod 'Firebase/Database'
+  pod 'FirebaseFirestoreSwift', '8.3.0-beta'
   pod 'SnapKit'
 end

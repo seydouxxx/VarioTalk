@@ -516,6 +516,9 @@
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="UY5-hZ-rhR" kind="show" id="pDA-pv-pko"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
@@ -550,18 +553,116 @@
                     <view key="view" contentMode="scaleToFill" id="eEj-Yp-zcB">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="rD3-aB-gVK">
+                                <rect key="frame" x="0.0" y="88" width="414" height="725"/>
+                                <subviews>
+                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="51d-0r-f82">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="680"/>
+                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                    </tableView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RH1-CR-9xE">
+                                        <rect key="frame" x="0.0" y="685" width="414" height="40"/>
+                                        <subviews>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vnu-wM-txb">
+                                                <rect key="frame" x="0.0" y="0.0" width="60" height="40"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="60" id="c41-Vq-KPJ"/>
+                                                </constraints>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" image="plus" catalog="system"/>
+                                                <connections>
+                                                    <action selector="plusButtonPressed:" destination="UY5-hZ-rhR" eventType="touchUpInside" id="WYE-F8-3Z4"/>
+                                                </connections>
+                                            </button>
+                                            <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="6Bb-Ja-wwT">
+                                                <rect key="frame" x="60" y="0.0" width="294" height="40"/>
+                                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                <textInputTraits key="textInputTraits"/>
+                                            </textField>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OAi-5u-9MO">
+                                                <rect key="frame" x="354" y="0.0" width="60" height="40"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="60" id="zUF-z9-UTQ"/>
+                                                </constraints>
+                                                <state key="normal" title="Button"/>
+                                                <buttonConfiguration key="configuration" style="plain" title="전송"/>
+                                                <connections>
+                                                    <action selector="sendButtonPressed:" destination="UY5-hZ-rhR" eventType="touchUpInside" id="8TS-C7-nX8"/>
+                                                </connections>
+                                            </button>
+                                        </subviews>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="40" id="Mij-SF-yw0"/>
+                                        </constraints>
+                                    </stackView>
+                                </subviews>
+                            </stackView>
+                            <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MiV-3v-TVB">
+                                <rect key="frame" x="0.0" y="88" width="414" height="40"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Da-Fn-0iP">
+                                        <rect key="frame" x="0.0" y="0.0" width="80" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="80" id="ese-YW-08c"/>
+                                        </constraints>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" image="chevron.left" catalog="system" title=" 채팅"/>
+                                        <connections>
+                                            <action selector="backButtonPressed:" destination="UY5-hZ-rhR" eventType="touchUpInside" id="WIR-y7-mIM"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dGH-gn-TdN">
+                                        <rect key="frame" x="80" y="0.0" width="254" height="40"/>
+                                        <fontDescription key="fontDescription" type="system" weight="thin" pointSize="18"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MWw-DY-OsL">
+                                        <rect key="frame" x="334" y="0.0" width="80" height="40"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="80" id="wNG-hg-KDu"/>
+                                        </constraints>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain"/>
+                                    </button>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="WIE-Ro-18u"/>
+                                </constraints>
+                            </stackView>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="7qO-fD-qaf"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="7qO-fD-qaf" firstAttribute="trailing" secondItem="MiV-3v-TVB" secondAttribute="trailing" id="6Wm-1b-v3x"/>
+                            <constraint firstItem="7qO-fD-qaf" firstAttribute="bottom" secondItem="rD3-aB-gVK" secondAttribute="bottom" id="AiS-tQ-oX4"/>
+                            <constraint firstItem="7qO-fD-qaf" firstAttribute="trailing" secondItem="rD3-aB-gVK" secondAttribute="trailing" id="E2F-mO-tGr"/>
+                            <constraint firstItem="rD3-aB-gVK" firstAttribute="top" secondItem="7qO-fD-qaf" secondAttribute="top" id="IEb-Ro-jZP"/>
+                            <constraint firstItem="rD3-aB-gVK" firstAttribute="leading" secondItem="7qO-fD-qaf" secondAttribute="leading" id="bMK-81-qbm"/>
+                            <constraint firstItem="MiV-3v-TVB" firstAttribute="top" secondItem="7qO-fD-qaf" secondAttribute="top" id="rYJ-QY-sLW"/>
+                            <constraint firstItem="MiV-3v-TVB" firstAttribute="leading" secondItem="7qO-fD-qaf" secondAttribute="leading" id="sqL-14-GTP"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="backButton" destination="2Da-Fn-0iP" id="VI3-ti-OKc"/>
+                        <outlet property="chatTextField" destination="6Bb-Ja-wwT" id="Z2g-Td-CDd"/>
+                        <outlet property="containerView" destination="rD3-aB-gVK" id="DI1-o0-kjT"/>
+                        <outlet property="hiddenButton" destination="MWw-DY-OsL" id="AFg-iX-2qL"/>
+                        <outlet property="plusButton" destination="Vnu-wM-txb" id="gDF-Jl-w1O"/>
+                        <outlet property="sendButton" destination="OAi-5u-9MO" id="B6t-T9-mSt"/>
+                        <outlet property="tableView" destination="51d-0r-f82" id="Hh9-uM-Zfq"/>
+                        <outlet property="titleLabel" destination="dGH-gn-TdN" id="v5s-YO-9Pq"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="aUZ-Fc-0fZ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4695.652173913044" y="460.71428571428567"/>
+            <point key="canvasLocation" x="4469.5652173913049" y="460.71428571428567"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="ZfF-q3-sPt">
             <objects>
-                <tabBarController storyboardIdentifier="LoginSuccess" automaticallyAdjustsScrollViewInsets="NO" id="5kH-Ec-h2r" sceneMemberID="viewController">
+                <tabBarController storyboardIdentifier="MainScreen" automaticallyAdjustsScrollViewInsets="NO" id="5kH-Ec-h2r" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="DTp-Mp-sec"/>
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="JYN-nb-hqx">
@@ -581,7 +682,7 @@
         <!--Navigation Controller-->
         <scene sceneID="Ssv-a3-QMJ">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Iwc-HT-azO" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="ChatNavigationController" automaticallyAdjustsScrollViewInsets="NO" id="Iwc-HT-azO" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" title="" image="bubble.right" catalog="system" selectedImage="bubble.right.fill" id="cDm-Hs-UZS"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="yNQ-Sf-6JS">
@@ -601,10 +702,12 @@
     <resources>
         <image name="bubble.right" catalog="system" width="128" height="110"/>
         <image name="bubble.right.fill" catalog="system" width="128" height="110"/>
+        <image name="chevron.left" catalog="system" width="96" height="128"/>
         <image name="magnifyingglass" catalog="system" width="128" height="115"/>
         <image name="person" catalog="system" width="128" height="117"/>
         <image name="person.crop.circle.badge.plus" catalog="system" width="128" height="113"/>
         <image name="person.fill" catalog="system" width="128" height="120"/>
+        <image name="plus" catalog="system" width="128" height="113"/>
         <image name="plus.bubble" catalog="system" width="128" height="110"/>
         <image name="xmark" catalog="system" width="128" height="113"/>
         <systemColor name="systemBackgroundColor">

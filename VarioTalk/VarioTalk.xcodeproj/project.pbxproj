@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		579EF0FF28B4BF56094609B0 /* Pods_VarioTalk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 43A0534446435CD444767C25 /* Pods_VarioTalk.framework */; };
+		7E41A7D2275D1BAB00F22C52 /* ChatTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E41A7D0275D1BAB00F22C52 /* ChatTableViewCell.swift */; };
+		7E41A7D5275E50CE00F22C52 /* DB.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7E41A7D4275E50CE00F22C52 /* DB.swift */; };
 		7EA3CA5A27572DDF00B5B21A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EA3CA5927572DDF00B5B21A /* AppDelegate.swift */; };
 		7EA3CA5C27572DDF00B5B21A /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EA3CA5B27572DDF00B5B21A /* SceneDelegate.swift */; };
 		7EA3CA5E27572DDF00B5B21A /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7EA3CA5D27572DDF00B5B21A /* LoginViewController.swift */; };
@@ -34,6 +36,8 @@
 		1859323F26ABCD793CE68101 /* Pods-VarioTalk.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VarioTalk.debug.xcconfig"; path = "Target Support Files/Pods-VarioTalk/Pods-VarioTalk.debug.xcconfig"; sourceTree = "<group>"; };
 		43A0534446435CD444767C25 /* Pods_VarioTalk.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VarioTalk.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		50E70A3B77DC28D5F45547D7 /* Pods-VarioTalk.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VarioTalk.release.xcconfig"; path = "Target Support Files/Pods-VarioTalk/Pods-VarioTalk.release.xcconfig"; sourceTree = "<group>"; };
+		7E41A7D0275D1BAB00F22C52 /* ChatTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatTableViewCell.swift; sourceTree = "<group>"; };
+		7E41A7D4275E50CE00F22C52 /* DB.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DB.swift; sourceTree = "<group>"; };
 		7EA3CA5627572DDF00B5B21A /* VarioTalk.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VarioTalk.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7EA3CA5927572DDF00B5B21A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7EA3CA5B27572DDF00B5B21A /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -130,6 +134,7 @@
 				7EA3CA82275A0D5300B5B21A /* FriendTableViewCell.xib */,
 				7EA3CA8B275BC9B400B5B21A /* ChatListTableViewCell.swift */,
 				7EA3CA8C275BC9B400B5B21A /* ChatListTableViewCell.xib */,
+				7E41A7D0275D1BAB00F22C52 /* ChatTableViewCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -153,6 +158,7 @@
 			children = (
 				7EA3CA7C2758E54B00B5B21A /* Context.swift */,
 				7EA3CA89275BBE5200B5B21A /* Chat.swift */,
+				7E41A7D4275E50CE00F22C52 /* DB.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -292,8 +298,10 @@
 				7EA3CA5A27572DDF00B5B21A /* AppDelegate.swift in Sources */,
 				7EA3CA7D2758E54B00B5B21A /* Context.swift in Sources */,
 				7EA3CA802759F00700B5B21A /* Tools.swift in Sources */,
+				7E41A7D5275E50CE00F22C52 /* DB.swift in Sources */,
 				7EA3CA8D275BC9B400B5B21A /* ChatListTableViewCell.swift in Sources */,
 				7EA3CA83275A0D5300B5B21A /* FriendTableViewCell.swift in Sources */,
+				7E41A7D2275D1BAB00F22C52 /* ChatTableViewCell.swift in Sources */,
 				7EA3CA5C27572DDF00B5B21A /* SceneDelegate.swift in Sources */,
 				7EA3CA88275B7F2100B5B21A /* ChatViewController.swift in Sources */,
 				7EA3CA73275736B200B5B21A /* ChatListViewController.swift in Sources */,
