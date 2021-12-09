@@ -70,6 +70,10 @@ extension DB {
 //MARK: - Get Chatting Room List
 extension DB {
     
+    func observeChatRoom(from chatId: String, completion: @escaping () -> Void) {
+        
+    }
+    
     // chatId -> chat metadata as Chat
     func loadChatData(from chatId: String, completion: @escaping (Chat) -> Void) {
         var title = ""
@@ -97,6 +101,30 @@ extension DB {
             }
         }
     }
+    // email -> chatId
+    func findChatWithEmail(with email: String, completion: @escaping (String) -> Void) {
+        var resultId = ""
+        self.getChatIds(from: UserInfoContext.shared.email) { chatIds in
+            if chatIds.count == 0 {
+                completion(resultId)
+            }
+            for i in chatIds.startIndex..<chatIds.endIndex {
+                self.chatRef.child("participants/\(chatIds[i])").getData { error, snapshot in
+                    if let data = (snapshot.value as? NSDictionary)?.allValues as? [String] {
+                        if data.count == 2,
+                           data.contains(UserInfoContext.shared.email),
+                           data.contains(email) {
+                            resultId = chatIds[i]
+                        }
+                        
+                        if i == chatIds.endIndex-1 {
+                            completion(resultId)
+                        }
+                    }
+                }
+            }
+        }
+    }
     
     // email -> chatId as String
     func createNewChat(with email: String, message: Message, completion: @escaping (String) -> Void) {
@@ -105,12 +133,14 @@ extension DB {
         guard let msgContent = message.content else { return }
         guard let msgSender = message.sender else { return }
         guard let msgTimestamp = message.timestamp else { return }
+        guard let msgIsRead = message.isRead else { return }
         
         // 메세지 기록 생성
         chatRef.child("messages/\(chatId)/message1").setValue([
             "message": msgContent,
             "sender": msgSender,
-            "timestamp": msgTimestamp
+            "timestamp": msgTimestamp,
+            "isRead": msgIsRead
         ])
         self.getUserInfo(from: email, completion: { friendInfo in
             // 참여자 기록 생성
@@ -156,6 +186,7 @@ extension DB {
         guard let msgContent = message.content else { return }
         guard let msgSender = message.sender else { return }
         guard let msgTimestamp = message.timestamp else { return }
+        guard let msgIsRead = message.isRead else { return }
         
         var prevTitle = ""
         
@@ -163,7 +194,8 @@ extension DB {
             self.chatRef.child("messages/\(chatId)/message\(count+1)").setValue([
                 "message": msgContent,
                 "sender": msgSender,
-                "timestamp": msgTimestamp
+                "timestamp": msgTimestamp,
+                "isRead": msgIsRead
             ])
         }
         self.chatRef.child("chats/\(chatId)").getData { error, snapshot in
@@ -182,6 +214,28 @@ extension DB {
     func countMessagesInChat(in chatId: String, completion: @escaping (UInt) -> Void) {
         chatRef.child("messages/\(chatId)").getData { error, snapshot in
             completion(snapshot.childrenCount)
+        }
+    }
+    
+    // TODO: Function Complement
+    // chatId -> ??
+    func setMessagesIsRead(for chatId: String, completion: @escaping (String) -> Void) {
+        chatRef.child("messages/\(chatId)").getData { error, snapshot in
+            if let values = (snapshot.value as? NSDictionary)?.allValues,
+               let keys = (snapshot.value as? NSDictionary)?.allKeys {
+                for i in keys.startIndex..<keys.endIndex {
+                    guard let message = values[i] as? NSDictionary else { return }
+                    if (message["sender"] as! String) != UserInfoContext.shared.email {
+                        self.chatRef.child("messages/\(chatId)/\(keys[i])").updateChildValues(["isRead": true])
+                    }
+                }
+//                values.forEach { message in
+//                    guard let message = message as? NSDictionary else { return }
+//                    if (message["sender"] as! String) != UserInfoContext.shared.email {
+//
+//                    }
+//                }
+            }
         }
     }
 }

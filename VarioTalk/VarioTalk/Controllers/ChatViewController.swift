@@ -23,9 +23,8 @@ class ChatViewController: UIViewController {
     @IBOutlet weak var chatTextField: UITextField!
     @IBOutlet weak var sendButton: UIButton!
     
-    var friendInfo: [String: Any]!
+    var friendInfo: UserInfo!
     var chatId: String?
-    var chatRef = Database.database(url: Constants.shared.dbUrl).reference()
     var db = Firestore.firestore()
     var messages: [Message] = []
 
@@ -43,7 +42,7 @@ class ChatViewController: UIViewController {
         
         self.chatTextField.delegate = self
         
-        self.titleLabel.text = (friendInfo["username"] as! String)
+        self.titleLabel.text = friendInfo.username
         self.plusButton.setTitle("", for: .normal)
         self.hiddenButton.setTitle("", for: .normal)
         
@@ -53,18 +52,22 @@ class ChatViewController: UIViewController {
         
         self.tableView.register(ChatTableViewCell.self, forCellReuseIdentifier: "ChatTableViewCell")
         
-        
         print(friendInfo)
         self.loadMessages()
         self.syncMessages()
+        guard let chatId = self.chatId else { return }
+        DB.shared.setMessagesIsRead(for: chatId) { _ in
+            
+        }
     }
     @IBAction func sendButtonPressed(_ sender: UIButton) {
         guard let messageText = self.chatTextField.text else { return }
         guard let sender = UserInfoContext.shared.email else { return }
         let timestamp = Int(Date().timeIntervalSince1970)
-        let message = Message(content: messageText, sender: sender, timestamp: timestamp)
-        
+        let message = Message(content: messageText, sender: sender, timestamp: timestamp, isRead: false)
+        print("-*-*")
         print(self.chatId)
+        print("-*-*")
         
         if let chatId = self.chatId {
             // 기존 채팅 데이터에 새로운 채팅 내용 추가
@@ -73,34 +76,45 @@ class ChatViewController: UIViewController {
             }
         } else {
             // 새로운 채팅 세션인 경우 -> db에 새로운 채팅방 정보 생성
-            DB.shared.createNewChat(with: friendInfo["email"] as! String, message: message) { chatId in
+            DB.shared.createNewChat(with: friendInfo.email, message: message) { chatId in
                 self.chatId = chatId
                 print("chatId: ")
                 print(self.chatId)
+                self.syncMessages()
             }
         }
         self.chatTextField.text = ""
     }
     func syncMessages() {
+        print("sync working?")
         guard let chatId = self.chatId else { return }
-        print("why?")
+        
+        print("sync worked!")
         DB.shared.chatRef.child("messages/\(chatId)").observe(.childAdded) { snapshot in
-            
-            print("why2?")
             if let data = snapshot.value as? NSDictionary,
                let msgContent = data["message"] as? String,
                let msgSender = data["sender"] as? String,
-               let msgTimestamp = data["timestamp"] as? Int {
-                self.messages.append(Message(content: msgContent, sender: msgSender, timestamp: msgTimestamp))
+               let msgTimestamp = data["timestamp"] as? Int,
+               let msgIsRead = data["isRead"] as? Bool {
+                self.messages.append(Message(content: msgContent, sender: msgSender, timestamp: msgTimestamp, isRead: msgIsRead))
                 let indexPath = IndexPath(row: self.messages.count-1, section: 0)
-                
+
                 self.tableView.insertRows(at: [indexPath], with: .none)
                 self.tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
             }
         }
-        //TODO: newChat
-        
-//        DB.shared.chatRef.child("")
+        DB.shared.chatRef.child("messages/\(chatId)").observe(.childChanged) { snapshot in
+            print(snapshot.key)
+            print(snapshot.value)
+            if let data = snapshot.value as? NSDictionary,
+               let msgContent = data["message"] as? String,
+               let msgSender = data["sender"] as? String,
+               let msgTimestamp = data["timestamp"] as? Int,
+               let msgIsRead = data["isRead"] as? Bool {
+                //TODO: do something
+            }
+            
+        }
     }
     @IBAction func plusButtonPressed(_ sender: UIButton) {
         // TODO: 추후에 통화(오디오/비디오) / 미디어 전송 기능 구현
@@ -110,11 +124,6 @@ class ChatViewController: UIViewController {
         self.navigationController?.popViewController(animated: true)
     }
     func loadMessages() {
-        guard let chatId = self.chatId else {
-            //이 경우 채팅 내역이 존재하지 않는 상대와의 채팅
-            print("??")
-            return
-        }
 //        self.chatRef.child("messages").child(chatId).getData { error, snapshot in
 //            // 없을 수 있는거 : chatID, messages
 //            guard error == nil else {
@@ -156,9 +165,8 @@ extension ChatViewController: UITableViewDataSource {
         cell.messageLabel.text = message.content
         
         // TODO: timestamp 수정해야함
-        print(dateFormatterInTime(from: message.timestamp))
         cell.timeLabel.text = dateFormatterInTime(from: message.timestamp)
-        
+        cell.unreadLabel.text = message.isRead ? "" : "1"
         cell.isMine = message.sender == UserInfoContext.shared.email ? true : false
         
         return cell

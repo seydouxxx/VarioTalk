@@ -20,6 +20,7 @@ class ChatListViewController: UIViewController {
     var db = Firestore.firestore()
 //    var chatIds: [String] = []
     var chatData: [Chat] = []
+    var chatInfo: [ChatInfo] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -31,6 +32,10 @@ class ChatListViewController: UIViewController {
         self.navigationController?.navigationBar.isHidden = true
         self.tabBarController?.tabBar.isHidden = false
         
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.initView()
     }
     private func initView() {
         self.navigationController?.navigationBar.isHidden = true
@@ -44,51 +49,60 @@ class ChatListViewController: UIViewController {
         
         self.tableView.register(UINib(nibName: "ChatListTableViewCell", bundle: nil), forCellReuseIdentifier: "ChatListTableViewCell")
         
-        self.chatRef = Database.database(url: Constants.shared.dbUrl).reference()
-        
         DB.shared.getChatIds(from: UserInfoContext.shared.email) { chatIds in
             chatIds.forEach { id in
-                DB.shared.loadChatData(from: id) { chatData in
-                    self.chatData.append(chatData)
-                    print("-----------getChatIds")
-                    print(self.chatData)
-                    self.chatData.sort { $0.timestamp > $1.timestamp }
-                    DispatchQueue.main.async {
-                        self.tableView.reloadData()
+                DB.shared.chatRef.child("chats/\(id)").observe(.value) { snapshot in
+                    if let data = snapshot.value as? NSDictionary {
+                        guard let title = data["title"] as? String else { return }
+                        guard let id = data["id"] as? String else { return }
+                        guard let lastMessage = data["lastMessage"] as? String else { return }
+                        guard let timestamp = data["timestamp"] as? Int else { return }
+                        let chat = Chat(id: id, title: title, lastMessage: lastMessage, timestamp: timestamp)
+                        DB.shared.getUserInfoFromChatId(with: id) { userInfo in
+                            let username = userInfo["username"] as! String
+                            let email = userInfo["email"] as! String
+                            let image = userInfo["image"] as! [Float]
+                            
+                            let userInfo = UserInfo(username: username, email: email, image: image)
+                            
+                            self.chatInfo = self.chatInfo.filter { chatInfo in
+                                chatInfo.chat.id != chat.id
+                            }
+                            
+                            self.chatInfo.append(ChatInfo(
+                                userInfo: userInfo,
+                                chat: chat))
+                            
+                            self.chatInfo.sort { $0.chat.timestamp > $1.chat.timestamp }
+                            
+                            DispatchQueue.main.async {
+                                self.tableView.reloadData()
+                            }
+                        }
                     }
                 }
             }
-            chatIds.forEach { id in
-                DB.shared.chatRef.child("chats/\(id)").observe(.childChanged) { snapshot in
-                    DB.shared.loadChatData(from: id) { chat in
-                        let chat = chat as Chat
-                        self.chatData = self.chatData.filter {
-                            $0.id! != id
-                        }
-                        self.chatData.append(chat)
-                        print("-----------childChanged")
-                        print(self.chatData)
-                        self.chatData.sort { $0.timestamp > $1.timestamp}
-                        DispatchQueue.main.async {
-                            self.tableView.reloadData()
-                        }
-                        
-                    }
-                }
-            }
-            print("load chat list here!")
         }
     }
-    //email -> chatId
+    
     func openChat(with friendInfo: [String: Any]) {
         
-        //일단 열자
+        guard let username = friendInfo["username"] as? String else { return }
+        guard let email = friendInfo["email"] as? String else { return }
+        guard let image = friendInfo["image"] as? [Float] else { return }
+        
+        print(username, email, image)
         let board = UIStoryboard.init(name: "Main", bundle: nil)
         let chatVC = board.instantiateViewController(withIdentifier: "ChatViewController") as! ChatViewController
-        chatVC.chatId = nil
-        chatVC.friendInfo = friendInfo
-        self.navigationController?.pushViewController(chatVC, animated: true)
-        
+        DB.shared.findChatWithEmail(with: friendInfo["email"] as! String) { chatId in
+            
+            print("-----")
+            print(chatId)
+            print("-----")
+            chatVC.chatId = chatId == "" ? nil : chatId
+            chatVC.friendInfo = UserInfo(username: username, email: email, image: image)
+            self.navigationController?.pushViewController(chatVC, animated: true)
+        }
     }
     
     @IBAction func searchButtonPressed(_ sender: UIButton) {
@@ -101,36 +115,24 @@ class ChatListViewController: UIViewController {
 
 extension ChatListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.chatData.count
+        return self.chatInfo.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = self.tableView.dequeueReusableCell(withIdentifier: "ChatListTableViewCell", for: indexPath) as? ChatListTableViewCell else { return UITableViewCell() }
-        
-        let chat = self.chatData[indexPath.row]
-        
-        // 채팅 타이틀 별도 지정 안 되어있고 1대1 채팅인 경우 상대방 이름으로 nameLabel 세팅
-        DB.shared.getUserInfoFromChatId(with: self.chatData[indexPath.row].id) { userInfo in
-            print("\(indexPath.row) : \(userInfo)")
-            if let image = userInfo["image"] as? [Float],
-               let name = userInfo["username"] as? String {
-                cell.chatImageView.image = UIColor(red: CGFloat(image[0]), green: CGFloat(image[1]), blue: CGFloat(image[2]), alpha: CGFloat(image[3])).image(cell.chatImageView.frame.size)
-                cell.nameLabel.text = name
-            } else {
-                cell.chatImageView.image = UIColor(red: 0, green: 0, blue: 0, alpha: 1).image(cell.chatImageView.frame.size)
-                cell.nameLabel.text = chat.title
-            }
-        }
-        cell.lastMessageLabel.text = chat.lastMessage
+        let chatInfo = self.chatInfo[indexPath.row]
+        cell.nameLabel.text = chatInfo.userInfo.username
+        cell.chatImageView.image = UIColor(red: CGFloat(chatInfo.userInfo.image[0]), green: CGFloat(chatInfo.userInfo.image[1]), blue: CGFloat(chatInfo.userInfo.image[2]), alpha: CGFloat(chatInfo.userInfo.image[3])).image(cell.chatImageView.frame.size)
+        cell.lastMessageLabel.text = chatInfo.chat.lastMessage
         
         let calendar = Calendar.current
-        let timestampDate = calendar.startOfDay(for: Date(timeIntervalSince1970: Double(chat.timestamp)))
-        if 1 > calendar.dateComponents([.day], from: timestampDate, to: Date()).day! {
-            cell.timestampLabel.text = dateFormatterInTime(from: chat.timestamp)
-        } else if 2 > calendar.dateComponents([.day], from: timestampDate, to: Date()).day! {
+        let elapsedDate = calendar.dateComponents([.day], from: Date(timeIntervalSince1970: Double(chatInfo.chat.timestamp)), to: Date()).day!
+        if elapsedDate < 1 {
+            cell.timestampLabel.text = dateFormatterInTime(from: chatInfo.chat.timestamp)
+        } else if elapsedDate < 2 {
             cell.timestampLabel.text = "어제"
-        }else {
-            cell.timestampLabel.text = dateFormatterInDate(from: chat.timestamp)
+        } else {
+            cell.timestampLabel.text = dateFormatterInDate(from: chatInfo.chat.timestamp)
         }
         
         return cell
@@ -140,12 +142,9 @@ extension ChatListViewController: UITableViewDataSource {
 extension ChatListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let chatVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ChatViewController") as! ChatViewController
-        chatVC.chatId = self.chatData[indexPath.row].id
-        DB.shared.getUserInfoFromChatId(with: self.chatData[indexPath.row].id) { friendInfo in
-            chatVC.friendInfo = friendInfo
-            print(friendInfo)
-            self.navigationController?.pushViewController(chatVC, animated: true)
-        }
+        chatVC.chatId = self.chatInfo[indexPath.row].chat.id
+        chatVC.friendInfo = self.chatInfo[indexPath.row].userInfo
+        self.navigationController?.pushViewController(chatVC, animated: true)
         return
     }
 }

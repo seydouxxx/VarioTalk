@@ -12,6 +12,7 @@ class ChatTableViewCell: UITableViewCell {
     let messageView = UIView()
     let messageLabel = UILabel()
     let timeLabel = UILabel()
+    let unreadLabel = UILabel()
     
     var isMine: Bool! {
         didSet {
@@ -21,9 +22,11 @@ class ChatTableViewCell: UITableViewCell {
             if isMine {
                 self.messageLabel.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -30).isActive = true
                 self.timeLabel.trailingAnchor.constraint(equalTo: self.messageView.leadingAnchor, constant: -10).isActive = true
+                self.unreadLabel.trailingAnchor.constraint(equalTo: self.messageView.leadingAnchor, constant: -10).isActive = true
             } else {
                 self.messageLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 30).isActive = true
                 self.timeLabel.leadingAnchor.constraint(equalTo: self.messageView.trailingAnchor, constant: 10).isActive = true
+                self.unreadLabel.leadingAnchor.constraint(equalTo: self.messageView.trailingAnchor, constant: 10).isActive = true
             }
         }
     }
@@ -34,14 +37,18 @@ class ChatTableViewCell: UITableViewCell {
         self.addSubview(self.messageView)
         self.addSubview(self.messageLabel)
         self.addSubview(self.timeLabel)
+        self.addSubview(self.unreadLabel)
         
         self.messageLabel.numberOfLines = 0
         self.timeLabel.textColor = .lightGray
         self.timeLabel.font = UIFont.systemFont(ofSize: 13)
+        self.unreadLabel.textColor = .yellow
+        self.unreadLabel.font = UIFont.systemFont(ofSize: 11)
         
         self.messageLabel.translatesAutoresizingMaskIntoConstraints = false
         self.messageView.translatesAutoresizingMaskIntoConstraints = false
         self.timeLabel.translatesAutoresizingMaskIntoConstraints = false
+        self.unreadLabel.translatesAutoresizingMaskIntoConstraints = false
         
         
         self.messageView.layer.cornerRadius = 15
@@ -58,7 +65,11 @@ class ChatTableViewCell: UITableViewCell {
             self.messageView.trailingAnchor.constraint(equalTo: self.messageLabel.trailingAnchor, constant: 15),
             
             self.timeLabel.bottomAnchor.constraint(equalTo: self.messageView.bottomAnchor),
-            self.timeLabel.heightAnchor.constraint(equalToConstant: 20)
+            self.timeLabel.heightAnchor.constraint(equalToConstant: 20),
+            
+            self.unreadLabel.bottomAnchor.constraint(equalTo: self.timeLabel.topAnchor),
+            self.unreadLabel.heightAnchor.constraint(equalToConstant: 15)
+            
         ]
         NSLayoutConstraint.activate(constraints)
         
