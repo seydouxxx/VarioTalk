@@ -10,6 +10,7 @@ import RxSwift
 import RxCocoa
 import FirebaseAuth
 import Firebase
+import FirebaseFirestore
 
 class SignUpViewController: UIViewController {
 
@@ -72,18 +73,6 @@ class SignUpViewController: UIViewController {
                         print("Document added with ID")
                     }
                 }
-//                ref = self.db.collection("User").addDocument(data: [
-//                    "username": username,
-//                    "email": email,
-//                    "friends": []
-//                ]) { err in
-//                    if let err = err {
-//                        print("Error adding document: \(err)")
-//                    } else {
-//                        print("Document added with ID: \(ref!.documentID)")
-//                    }
-//                }
-                
                 self.dismiss(animated: true, completion: nil)
             }
             if let error = error {
